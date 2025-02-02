@@ -1,0 +1,8 @@
+Django
+django-redis
+django-ckeditor
+djangorestframework
+drf-yasg
+googletrans==4.0.0-rc1
+pytest
+flake8
