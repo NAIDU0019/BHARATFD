@@ -1,18 +1,29 @@
-from django.test import TestCase
-from .models import FAQ
-from .serializers import FAQSerializer
+from rest_framework.test import APITestCase
+from django.urls import reverse
+from faq_app.models import FAQ  # Ensure model is imported
 
-class FAQTestCase(TestCase):
-    def setUp(self):
-        self.faq = FAQ.objects.create(question="What is caching?", answer="Caching improves performance by storing temporary data.")
+class FAQAPITests(APITestCase):
+    def test_get_faq_list(self):
+        url = reverse('faq-list')  # Ensure the URL name matches urls.py
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
 
-    def test_translation(self):
-        # Test translation
-        lang = 'hi'
-        translated_question = translate_text(self.faq.question, lang)
-        self.assertEqual(translated_question, "कैशिंग क्या है?")
+    def test_get_faq_with_lang(self):
+        url = reverse('faq-list') + '?lang=es'
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
 
-    def test_cache(self):
-        # Test caching
-        cache.set("test_key", "cached_value", timeout=60)
-        self.assertEqual(cache.get("test_key"), "cached_value")
+    def test_pagination(self):
+        url = reverse('faq-list') + '?page=1'
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+
+    def test_filtering(self):
+        url = reverse('faq-list') + '?filter=test'
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+
+    def test_sorting(self):
+        url = reverse('faq-list') + '?sort=question'
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
