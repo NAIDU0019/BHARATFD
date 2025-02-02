@@ -10,7 +10,14 @@ class FAQListCreateAPIView(generics.ListCreateAPIView):
     serializer_class = FAQSerializer
 
     def get_queryset(self):
-        return self._apply_pagination(self._apply_filtering(self._apply_sorting(self.queryset)))
+        lang = self.request.GET.get('lang', 'en')
+        queryset = super().get_queryset()
+
+        # Apply translations dynamically
+        for faq in queryset:
+            faq.question = faq.get_translated_question(lang)
+        
+        return queryset
 
     def _apply_pagination(self, queryset):
         page_size = 10
